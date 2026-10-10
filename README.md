@@ -182,9 +182,28 @@ DYNAMICS_URL=http://server/org DYNAMICS_USERNAME=user DYNAMICS_PASSWORD=secret \
 DYNAMICS_TEST_WRITE=1 DYNAMICS_TEST_RECORD='{"lastname":"n8n-node-test","new_type":100000005}' \
   DYNAMICS_URL=… DYNAMICS_USERNAME=… DYNAMICS_PASSWORD=… pnpm test:integration
 
-# Publish (runs the unit tests first)
-pnpm publish --access public
 ```
+
+### Release a new version
+
+`pnpm release` does the whole release in one command:
+
+1. Checks that the git working tree is clean.
+2. Bumps the version, starting from the newest version on npm.
+3. Runs the unit tests.
+4. Publishes to npm.
+5. Commits, tags (`v<version>`), and pushes.
+
+```bash
+pnpm release              # patch, for example 1.1.0 -> 1.1.1
+pnpm release minor        # 1.1.0 -> 1.2.0
+pnpm release major        # 1.1.0 -> 2.0.0
+pnpm release 1.4.0        # explicit version
+pnpm release --dry-run    # check everything without publishing or committing
+```
+
+If npm asks for a one-time password, confirm it in the browser or terminal. If publishing fails, the version change is reverted.
+
 
 `pnpm-workspace.yaml` disables the build script of `isolated-vm`, a native module that `n8n-workflow` pulls in. Only the TypeScript types of `n8n-workflow` are needed to build this package.
 

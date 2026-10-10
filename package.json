@@ -20,7 +20,8 @@
     "test": "pnpm run build && node --test test/unit.test.js",
     "test:integration": "pnpm run build && node --test --test-concurrency=1 test/integration.test.js",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm test"
+    "prepublishOnly": "pnpm test",
+    "release": "node scripts/release.mjs"
   },
   "files": [
     "dist",
