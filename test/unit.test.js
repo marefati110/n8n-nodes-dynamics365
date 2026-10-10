@@ -264,3 +264,51 @@ test('common headers combine annotations into a single Prefer value', () => {
 	assert.equal(headers.MSCRMCallerID, 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
 	assert.equal(odata.buildCommonHeaders({ annotations: 'all' }, ['x']).Prefer, 'odata.include-annotations="*"');
 });
+
+test('filter builder formats values by column type', () => {
+	const { buildFilterFromAttributes } = require('../dist/nodes/Dynamics365/helpers/filter');
+	const attribute = (logicalName, attributeType) => ({ logicalName, attributeType });
+	const attributes = [
+		attribute('name', 'String'),
+		attribute('statuscode', 'Status'),
+		attribute('revenue', 'Money'),
+		attribute('donotemail', 'Boolean'),
+		attribute('createdon', 'DateTime'),
+		attribute('parentcustomerid', 'Customer'),
+	];
+	const build = (conditions, combinator = 'and') => buildFilterFromAttributes(attributes, conditions, combinator);
+	const guid = 'BE8C1258-51EB-EA11-9679-000C29076E9C';
+
+	assert.equal(build([{ column: 'name', operator: 'equals', value: "O'Brien" }]), "name eq 'O''Brien'");
+	assert.equal(build([{ column: 'statuscode', operator: 'notEquals', value: '2' }]), 'statuscode ne 2');
+	assert.equal(build([{ column: 'revenue', operator: 'greaterThan', value: '1000.5' }]), 'revenue gt 1000.5');
+	assert.equal(build([{ column: 'donotemail', operator: 'equals', value: 'yes' }]), 'donotemail eq true');
+	assert.equal(build([{ column: 'createdon', operator: 'lessThan', value: '2026-01-01' }]), 'createdon lt 2026-01-01');
+	assert.equal(
+		build([{ column: 'parentcustomerid', operator: 'equals', value: `{${guid}}` }]),
+		`_parentcustomerid_value eq ${guid.toLowerCase()}`,
+	);
+	assert.equal(build([{ column: 'parentcustomerid', operator: 'isNull' }]), '_parentcustomerid_value eq null');
+	assert.equal(build([{ column: 'name', operator: 'notContains', value: 'x' }]), "not contains(name,'x')");
+	assert.equal(
+		build([{ column: 'statuscode', operator: 'in', value: '1, 2' }]),
+		'Microsoft.Dynamics.CRM.In(PropertyName=\'statuscode\',PropertyValues=["1","2"])',
+	);
+	assert.equal(
+		build([{ column: 'createdon', operator: 'lastXDays', value: '7' }]),
+		"Microsoft.Dynamics.CRM.LastXDays(PropertyName='createdon',PropertyValue=7)",
+	);
+	assert.equal(build([{ column: 'ownerid', operator: 'equalUserId' }]), "Microsoft.Dynamics.CRM.EqualUserId(PropertyName='ownerid')");
+	assert.equal(
+		build([{ column: 'name', operator: 'startsWith', value: 'A' }, { column: 'statuscode', operator: 'equals', value: '1' }], 'or'),
+		"(startswith(name,'A')) or (statuscode eq 1)",
+	);
+	// Unknown columns (navigation paths) infer the literal type.
+	assert.equal(build([{ column: 'primarycontactid/fullname', operator: 'equals', value: 'Ali' }]), "primarycontactid/fullname eq 'Ali'");
+	assert.equal(build([{ column: 'custom/number', operator: 'equals', value: '42' }]), 'custom/number eq 42');
+	assert.equal(build([{ column: '', operator: 'equals', value: 'x' }]), undefined);
+
+	assert.throws(() => build([{ column: 'statuscode', operator: 'equals', value: 'active' }]), /expects a number/);
+	assert.throws(() => build([{ column: 'createdon', operator: 'between', value: '2026-01-01' }]), /exactly two/);
+	assert.throws(() => build([{ column: 'createdon', operator: 'lastXDays', value: 'week' }]), /whole number/);
+});

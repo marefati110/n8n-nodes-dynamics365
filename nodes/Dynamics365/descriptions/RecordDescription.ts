@@ -7,6 +7,7 @@ import {
 	timeoutOption,
 	writeOptions,
 } from './shared';
+import { filterProperties } from '../helpers/filter';
 
 const show = (operation: string[], extra: Record<string, unknown[]> = {}) => ({
 	show: { resource: ['record'], operation, ...extra },
@@ -162,6 +163,8 @@ export const recordFields: INodeProperties[] = [
 		description: 'Max number of results to return',
 		displayOptions: show(['getMany', 'getRelated', 'fetchXml', 'executeView'], { returnAll: [false] }),
 	},
+
+	...filterProperties(show(['getMany', 'count', 'getRelated'])),
 
 	/* -------------------------------------------------------------- fetchxml */
 	{
@@ -380,14 +383,6 @@ export const recordFields: INodeProperties[] = [
 				description: 'Columns to return. Leave empty to return all. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
-				displayName: 'Filter',
-				name: 'filter',
-				type: 'string',
-				default: '',
-				placeholder: "statecode eq 0 and contains(name,'contoso')",
-				description: 'OData $filter expression',
-			},
-			{
 				displayName: 'Order By',
 				name: 'orderBy',
 				type: 'string',
@@ -441,13 +436,6 @@ export const recordFields: INodeProperties[] = [
 				description: 'Comma-separated columns of the related table to return',
 			},
 			{
-				displayName: 'Filter',
-				name: 'filter',
-				type: 'string',
-				default: '',
-				description: 'OData $filter expression applied to the related records',
-			},
-			{
 				displayName: 'Order By',
 				name: 'orderBy',
 				type: 'string',
@@ -488,14 +476,6 @@ export const recordFields: INodeProperties[] = [
 		default: {},
 		displayOptions: show(['count']),
 		options: [
-			{
-				displayName: 'Filter',
-				name: 'filter',
-				type: 'string',
-				default: '',
-				placeholder: 'statecode eq 0',
-				description: 'OData $filter expression; only matching records are counted',
-			},
 			impersonationOption,
 			timeoutOption,
 		],

@@ -56,22 +56,22 @@ To install offline instead, build a tarball:
 
 ```bash
 pnpm install
-pnpm pack         # creates marefati110-n8n-nodes-dynamics365-1.0.2.tgz
+pnpm pack         # creates marefati110-n8n-nodes-dynamics365-1.1.0.tgz
 ```
 
 Then install it into n8n's community nodes folder, for example in a Docker image:
 
 ```dockerfile
 FROM n8nio/n8n:2.36.7
-COPY marefati110-n8n-nodes-dynamics365-1.0.2.tgz /tmp/
+COPY marefati110-n8n-nodes-dynamics365-1.1.0.tgz /tmp/
 RUN mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes \
- && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.0.2.tgz
+ && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.1.0.tgz
 ```
 
 Or on a plain installation:
 
 ```bash
-cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.0.2.tgz
+cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.1.0.tgz
 ```
 
 Restart n8n afterwards. The package has no dependencies; n8n provides `n8n-workflow` at runtime.
@@ -114,6 +114,40 @@ Examples:
   - `PrincipalAccess`: `{"Principal": {"@odata.type": "Microsoft.Dynamics.CRM.team", "teamid": "<id>"}, "AccessMask": "ReadAccess"}`
 - **Execute Function → RetrieveTotalRecordCount**
   - `EntityNames`: `account,contact`
+
+## Filters
+
+**Get Many**, **Count**, **Get Related**, and the trigger have a **Filter** setting with three modes:
+
+| Mode | What you enter |
+| --- | --- |
+| **None** | Nothing. All records are returned. |
+| **Build Conditions** | One or more conditions (column, operator, value), combined with **AND** or **OR**. |
+| **Raw OData Expression** | A `$filter` expression, for example `statecode eq 0 and contains(name,'contoso')`. |
+
+In **Build Conditions** mode, the node formats each value from the column's metadata:
+
+- Text columns get quotes. Numbers and choice columns use the option value, for example `1`.
+- Lookup columns take a GUID and are compared through `_<column>_value`.
+- Dates take ISO values such as `2026-01-31`.
+- A column that isn't in the list, such as the lookup path `primarycontactid/fullname`, can be set with an expression. Its value type is inferred.
+
+Operators:
+
+| Group | Operators | Value |
+| --- | --- | --- |
+| Comparison | equals, not equals, greater/less than (or equal) | one value |
+| Empty | is empty, is not empty | none |
+| Text | contains, starts with, ends with, and their negations | text |
+| Lists | in list, not in list, choices contain / don't contain values | comma-separated values |
+| Range | between, not between | two comma-separated values |
+| Dates | today, yesterday, this/last/next week, month, and year, last/next 7 days | none |
+| Dates | on, on or before, on or after | a date |
+| Dates | last/next X hours, days, weeks, months, years; older than X minutes to years | a whole number |
+| User | equals current user, current user's teams, current user or teams, current business unit | none |
+| Hierarchy | above, under (or equal), not under | a record ID |
+
+Lists, ranges, dates, users, and hierarchy use Dynamics query functions such as `Microsoft.Dynamics.CRM.LastXDays`.
 
 ## Trigger
 

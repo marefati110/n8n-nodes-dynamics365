@@ -9,7 +9,8 @@ import type {
 import { dynamicsApiRequestAllItems } from '../Dynamics365/transport';
 import { resolveEntity, toWebApiPropertyNames } from '../Dynamics365/helpers/metadata';
 import { buildCommonHeaders } from '../Dynamics365/helpers/odata';
-import { getAttributeOptions, getEntityOptions } from '../Dynamics365/methods/loadOptions';
+import { getAttributeOptions, getEntityOptions, getFilterAttributeOptions } from '../Dynamics365/methods/loadOptions';
+import { filterProperties, getFilterFromParameters } from '../Dynamics365/helpers/filter';
 import { dynamics365NtlmApiTest } from '../Dynamics365/methods/credentialTest';
 
 interface PollState {
@@ -58,6 +59,11 @@ export class Dynamics365Trigger implements INodeType {
 				],
 				default: 'created',
 			},
+			...filterProperties(undefined).map((property) =>
+				property.name === 'filterMode'
+					? { ...property, displayName: 'Additional Filter', description: 'Only report records that also match this filter' }
+					: property,
+			),
 			{
 				displayName: 'Options',
 				name: 'options',
@@ -73,14 +79,6 @@ export class Dynamics365Trigger implements INodeType {
 						default: [],
 						description:
 							'Columns to return. Leave empty to return all. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-					},
-					{
-						displayName: 'Additional Filter',
-						name: 'filter',
-						type: 'string',
-						default: '',
-						placeholder: 'statecode eq 0',
-						description: 'Extra OData $filter combined with the time filter',
 					},
 					{
 						displayName: 'Include Formatted Values',
@@ -102,7 +100,7 @@ export class Dynamics365Trigger implements INodeType {
 	};
 
 	methods = {
-		loadOptions: { getEntityOptions, getAttributeOptions },
+		loadOptions: { getEntityOptions, getAttributeOptions, getFilterAttributeOptions },
 		credentialTest: { dynamics365NtlmApiTest },
 	};
 
@@ -131,7 +129,12 @@ export class Dynamics365Trigger implements INodeType {
 		const filters: string[] = [];
 		if (!isManual && state.lastTimestamp) filters.push(`${timeField} ge ${state.lastTimestamp}`);
 		if (event === 'updated' && state.lastTimestamp) filters.push(`createdon lt ${state.lastTimestamp}`);
-		if (options.filter) filters.push(`(${options.filter})`);
+		const extraFilter = await getFilterFromParameters.call(
+			this,
+			(name, fallback) => this.getNodeParameter(name, fallback),
+			entity.logicalName,
+		);
+		if (extraFilter) filters.push(`(${extraFilter})`);
 
 		const records = await dynamicsApiRequestAllItems.call(this, entity.entitySetName, {
 			qs: {

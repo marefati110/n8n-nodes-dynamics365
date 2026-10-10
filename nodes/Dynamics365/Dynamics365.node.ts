@@ -77,6 +77,7 @@ export class Dynamics365 implements INodeType {
 			getEntityOptions: loadOptions.getEntityOptions,
 			getAttributeOptions: loadOptions.getAttributeOptions,
 			getAllAttributeOptions: loadOptions.getAllAttributeOptions,
+			getFilterAttributeOptions: loadOptions.getFilterAttributeOptions,
 			getBinaryAttributeOptions: loadOptions.getBinaryAttributeOptions,
 			getRelationshipOptions: loadOptions.getRelationshipOptions,
 			getStateCodeOptions: loadOptions.getStateCodeOptions,

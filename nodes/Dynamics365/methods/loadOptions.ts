@@ -195,3 +195,28 @@ export async function getTeamOptions(this: ILoadOptionsFunctions): Promise<INode
 	});
 	return teams.map((t) => ({ name: String(t.name), value: String(t.teamid) }));
 }
+
+/** Columns for the filter builder: the related table's columns for Get Related. */
+export async function getFilterAttributeOptions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const entity = currentString(this, 'entity');
+	if (!entity) return [];
+	let logicalName = (await resolveEntity.call(this, entity)).logicalName;
+	const relationshipName = currentString(this, 'relationship');
+	if (currentString(this, 'operation') === 'getRelated' && relationshipName) {
+		const relationships = await getRelationships.call(this, logicalName);
+		const relationship = relationships.find((r) => r.navigationProperty === relationshipName);
+		if (!relationship) return [];
+		logicalName = relationship.relatedEntity;
+	}
+	const attributes = await getAttributes.call(this, logicalName);
+	return attributes
+		.filter((a) => a.isValidForRead && !a.attributeOf)
+		.map((a) => ({
+			name: `${a.displayName} (${a.logicalName})`,
+			value: a.logicalName,
+			description: `${a.attributeType}${a.targets?.length ? ` → ${a.targets.join(', ')}` : ''}${
+				a.options?.length ? ` – ${a.options.slice(0, 6).map((o) => `${o.value}=${o.label}`).join(', ')}${a.options.length > 6 ? ', …' : ''}` : ''
+			}`,
+		}))
+		.sort(byName);
+}

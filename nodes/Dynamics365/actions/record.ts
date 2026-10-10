@@ -38,6 +38,7 @@ import {
 	setFetchPaging,
 	type RecordPayload,
 } from '../helpers/odata';
+import { getFilterFromParameters } from '../helpers/filter';
 import { getJsonObject, getMappedValues, getOptions, requestTimeout, wrapBody, type OperationResult } from './common';
 
 const MAX_GET_URL_LENGTH = 2000;
@@ -71,6 +72,15 @@ async function selectQuery(
 		.filter(Boolean);
 	if (!names.length) return undefined;
 	return (await toWebApiPropertyNames.call(this, entity.logicalName, names)).join(',');
+}
+
+async function getFilter(this: IExecuteFunctions, entityLogicalName: string, i: number): Promise<string | undefined> {
+	return await getFilterFromParameters.call(
+		this,
+		(name, fallback) => this.getNodeParameter(name, i, fallback),
+		entityLogicalName,
+		i,
+	);
 }
 
 async function getWritePayload(
@@ -210,7 +220,7 @@ async function getMany(this: IExecuteFunctions, i: number): Promise<OperationRes
 	const limit = returnAll ? 0 : (this.getNodeParameter('limit', i, 50) as number);
 	const qs: IDataObject = {
 		$select: await selectQuery.call(this, entity, options.select),
-		$filter: options.filter,
+		$filter: await getFilter.call(this, entity.logicalName, i),
 		$orderby: options.orderBy,
 		$expand: options.expand,
 		$apply: options.apply,
@@ -331,7 +341,7 @@ async function count(this: IExecuteFunctions, i: number): Promise<OperationResul
 	const options = getOptions.call(this, i);
 	const headers = buildCommonHeaders(options);
 	const timeout = requestTimeout(options);
-	const filter = String(options.filter ?? '').trim();
+	const filter = (await getFilter.call(this, entity.logicalName, i)) ?? '';
 
 	if (!filter) {
 		// FetchXML aggregate is exact and fast, but limited to 50,000 records by the server.
@@ -385,7 +395,11 @@ async function getRelated(this: IExecuteFunctions, i: number): Promise<Operation
 	);
 	const options = getOptions.call(this, i);
 	const headers = buildCommonHeaders(options);
-	const qs: IDataObject = { $select: options.select, $filter: options.filter, $orderby: options.orderBy };
+	const qs: IDataObject = {
+		$select: options.select,
+		$filter: await getFilter.call(this, relationship.relatedEntity, i),
+		$orderby: options.orderBy,
+	};
 	const relatedPath = `${path}/${relationship.navigationProperty}`;
 
 	if (!relationship.isCollection) {
