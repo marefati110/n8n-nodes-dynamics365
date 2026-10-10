@@ -1,0 +1,33 @@
+{
+  "name": "n8n-nodes-dynamics365",
+  "version": "0.1.0",
+  "description": "n8n community node for Microsoft Dynamics 365 / Dataverse (on-premises, NTLM) Web API",
+  "keywords": ["n8n-community-node-package", "dynamics365", "dynamics", "crm", "dataverse", "ntlm"],
+  "license": "MIT",
+  "author": { "name": "Ali" },
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc && node scripts/copy-assets.mjs",
+    "dev": "tsc --watch",
+    "test": "npm run build && node --test test/unit.test.js",
+    "test:integration": "npm run build && node --test --test-concurrency=1 test/integration.test.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": ["dist/credentials/Dynamics365NtlmApi.credentials.js"],
+    "nodes": [
+      "dist/nodes/Dynamics365/Dynamics365.node.js",
+      "dist/nodes/Dynamics365Trigger/Dynamics365Trigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "n8n-workflow": "^2.16.0",
+    "typescript": "^5.6.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

@@ -1,0 +1,11 @@
+{
+	"node": "n8n-nodes-dynamics365.dynamics365OnPrem",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Sales", "Marketing & Content"],
+	"resources": {
+		"primaryDocumentation": [
+			{ "url": "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview" }
+		]
+	}
+}
