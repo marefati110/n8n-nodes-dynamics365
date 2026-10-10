@@ -32,7 +32,7 @@ export class Dynamics365 implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Dynamics 365 (On-Premises)',
 		name: 'dynamics365OnPrem',
-		icon: 'file:dynamics365.svg',
+		icon: 'file:dynamics365.png',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',

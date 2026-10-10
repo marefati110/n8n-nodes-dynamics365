@@ -5,7 +5,7 @@ export class Dynamics365NtlmApi implements ICredentialType {
 
 	displayName = 'Dynamics 365 On-Premises (NTLM) API';
 
-	icon = 'file:dynamics365.svg' as const;
+	icon = 'file:dynamics365.png' as const;
 
 	documentationUrl =
 		'https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview';

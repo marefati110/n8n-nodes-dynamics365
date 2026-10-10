@@ -1,4 +1,4 @@
-# n8n-nodes-dynamics365
+# @marefati110/n8n-nodes-dynamics365
 
 n8n community nodes for **Microsoft Dynamics 365 / Dataverse on-premises** (CRM 9.x), using the Web API with **NTLM (Windows) authentication**.
 
@@ -50,27 +50,29 @@ Parameters are shown as typed fields based on the CSDL (booleans, numbers, dates
 
 ## Installation
 
-Build a tarball:
+In n8n go to **Settings → Community Nodes → Install** and enter `@marefati110/n8n-nodes-dynamics365`.
+
+To install offline instead, build a tarball:
 
 ```bash
 npm install
 npm run build
-npm pack          # creates n8n-nodes-dynamics365-0.1.0.tgz
+npm pack          # creates marefati110-n8n-nodes-dynamics365-1.0.0.tgz
 ```
 
 Then install it into n8n's community nodes folder, for example in a Docker image:
 
 ```dockerfile
-FROM registry.ahanoffline.ir/n8n:2.36.7-ce.1
-COPY n8n-nodes-dynamics365-0.1.0.tgz /tmp/
+FROM n8nio/n8n:2.36.7
+COPY marefati110-n8n-nodes-dynamics365-1.0.0.tgz /tmp/
 RUN mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes \
- && npm install /tmp/n8n-nodes-dynamics365-0.1.0.tgz
+ && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.0.0.tgz
 ```
 
 Or on a plain installation:
 
 ```bash
-cd ~/.n8n/nodes && npm install /path/to/n8n-nodes-dynamics365-0.1.0.tgz
+cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.0.0.tgz
 ```
 
 Restart n8n afterwards. The `n8n-workflow` package is a peer dependency provided by n8n itself.
@@ -81,7 +83,7 @@ Create **Dynamics 365 On-Premises (NTLM) API** credentials:
 
 | Field | Example |
 | --- | --- |
-| Organization URL | `http://172.16.25.70/ahanonlinedev`. A full `…/api/data/v9.1` URL also works. |
+| Organization URL | `http://crm-server/OrganizationName`. A full `…/api/data/v9.1` URL also works. |
 | API Version | `9.1` |
 | Username | `crmadmin`, `DOMAIN\crmadmin` or `crmadmin@domain` |
 | Password | |

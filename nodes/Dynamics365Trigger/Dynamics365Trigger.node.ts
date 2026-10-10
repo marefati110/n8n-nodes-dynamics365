@@ -26,7 +26,7 @@ export class Dynamics365Trigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Dynamics 365 (On-Premises) Trigger',
 		name: 'dynamics365OnPremTrigger',
-		icon: 'file:dynamics365.svg',
+		icon: 'file:dynamics365.png',
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["event"] + ": " + $parameter["entity"]}}',

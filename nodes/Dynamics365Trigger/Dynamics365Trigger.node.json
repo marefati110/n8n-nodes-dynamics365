@@ -1,5 +1,5 @@
 {
-	"node": "n8n-nodes-dynamics365.dynamics365OnPremTrigger",
+	"node": "@marefati110/n8n-nodes-dynamics365.dynamics365OnPremTrigger",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Sales", "Marketing & Content"],
