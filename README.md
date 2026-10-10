@@ -56,22 +56,22 @@ To install offline instead, build a tarball:
 
 ```bash
 pnpm install
-pnpm pack         # creates marefati110-n8n-nodes-dynamics365-1.1.0.tgz
+pnpm pack         # creates marefati110-n8n-nodes-dynamics365-1.0.3.tgz
 ```
 
 Then install it into n8n's community nodes folder, for example in a Docker image:
 
 ```dockerfile
 FROM n8nio/n8n:2.36.7
-COPY marefati110-n8n-nodes-dynamics365-1.1.0.tgz /tmp/
+COPY marefati110-n8n-nodes-dynamics365-1.0.3.tgz /tmp/
 RUN mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes \
- && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.1.0.tgz
+ && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.0.3.tgz
 ```
 
 Or on a plain installation:
 
 ```bash
-cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.1.0.tgz
+cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.0.3.tgz
 ```
 
 Restart n8n afterwards. The package has no dependencies; n8n provides `n8n-workflow` at runtime.
