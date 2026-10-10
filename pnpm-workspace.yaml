@@ -1,0 +1,3 @@
+allowBuilds:
+  # Native module pulled in by n8n-workflow; only its types are needed here.
+  isolated-vm: false

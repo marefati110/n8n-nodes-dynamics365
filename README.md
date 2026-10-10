@@ -55,27 +55,26 @@ In n8n go to **Settings → Community Nodes → Install** and enter `@marefati11
 To install offline instead, build a tarball:
 
 ```bash
-npm install
-npm run build
-npm pack          # creates marefati110-n8n-nodes-dynamics365-1.0.1.tgz
+pnpm install
+pnpm pack         # creates marefati110-n8n-nodes-dynamics365-1.0.2.tgz
 ```
 
 Then install it into n8n's community nodes folder, for example in a Docker image:
 
 ```dockerfile
 FROM n8nio/n8n:2.36.7
-COPY marefati110-n8n-nodes-dynamics365-1.0.1.tgz /tmp/
+COPY marefati110-n8n-nodes-dynamics365-1.0.2.tgz /tmp/
 RUN mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes \
- && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.0.1.tgz
+ && npm install /tmp/marefati110-n8n-nodes-dynamics365-1.0.2.tgz
 ```
 
 Or on a plain installation:
 
 ```bash
-cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.0.1.tgz
+cd ~/.n8n/nodes && npm install /path/to/marefati110-n8n-nodes-dynamics365-1.0.2.tgz
 ```
 
-Restart n8n afterwards. The `n8n-workflow` package is a peer dependency provided by n8n itself.
+Restart n8n afterwards. The package has no dependencies; n8n provides `n8n-workflow` at runtime.
 
 ## Credentials
 
@@ -134,19 +133,26 @@ The first action/function lookup downloads `$metadata`, which is about 13 MB on 
 
 ## Development
 
+The project uses [pnpm](https://pnpm.io/) (see `packageManager` in `package.json`).
+
 ```bash
-npm install
-npm run build
-npm test                    # offline unit tests (NTLM vectors, CSDL, OData helpers, batch)
+pnpm install
+pnpm build
+pnpm test                   # offline unit tests (NTLM vectors, CSDL, OData helpers, batch)
 
 # Live tests (read-only unless DYNAMICS_TEST_WRITE=1)
 DYNAMICS_URL=http://server/org DYNAMICS_USERNAME=user DYNAMICS_PASSWORD=secret \
-  npm run test:integration
+  pnpm test:integration
 
 # Include write tests; supply the columns your org requires
 DYNAMICS_TEST_WRITE=1 DYNAMICS_TEST_RECORD='{"lastname":"n8n-node-test","new_type":100000005}' \
-  DYNAMICS_URL=… DYNAMICS_USERNAME=… DYNAMICS_PASSWORD=… npm run test:integration
+  DYNAMICS_URL=… DYNAMICS_USERNAME=… DYNAMICS_PASSWORD=… pnpm test:integration
+
+# Publish (runs the unit tests first)
+pnpm publish --access public
 ```
+
+`pnpm-workspace.yaml` disables the build script of `isolated-vm`, a native module that `n8n-workflow` pulls in. Only the TypeScript types of `n8n-workflow` are needed to build this package.
 
 Source layout:
 

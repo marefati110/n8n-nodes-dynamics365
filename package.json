@@ -1,6 +1,6 @@
 {
   "name": "@marefati110/n8n-nodes-dynamics365",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "n8n community node for Microsoft Dynamics 365 / Dataverse (on-premises, NTLM) Web API",
   "keywords": [
     "n8n-community-node-package",
@@ -17,9 +17,10 @@
   "scripts": {
     "build": "rm -rf dist && tsc && node scripts/copy-assets.mjs",
     "dev": "tsc --watch",
-    "test": "npm run build && node --test test/unit.test.js",
-    "test:integration": "npm run build && node --test --test-concurrency=1 test/integration.test.js",
-    "typecheck": "tsc --noEmit"
+    "test": "pnpm run build && node --test test/unit.test.js",
+    "test:integration": "pnpm run build && node --test --test-concurrency=1 test/integration.test.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm test"
   },
   "files": [
     "dist",
@@ -42,10 +43,8 @@
     "n8n-workflow": "^2.16.0",
     "typescript": "^5.6.0"
   },
-  "peerDependencies": {
-    "n8n-workflow": "*"
-  },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@12.8.1"
 }
