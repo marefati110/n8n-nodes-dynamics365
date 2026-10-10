@@ -1,0 +1,109 @@
+name: Auto-comment and handle PRs and issues on label
+env:
+  CONTRIBUTING_LINK: https://github.com/n8n-io/n8n-docs/blob/main/CONTRIBUTING.md
+  ORG_NAME: n8n-io
+  AUTHOR: ${{ github.event.issue.user.login || github.event.pull_request.user.login }}
+on:
+  issues:
+    types:
+      - labeled
+  pull_request_target:
+    types:
+      - labeled
+jobs:
+  handle-labels:
+    if: contains(fromJSON('["block", "scope:old-course", "quality:unusable", "quality:low-effort-usable", "quality:disruptive", "status:duplicate", "status:dev-cancelled", "status:pending-dev", "status:awaiting-release" ]'), github.event.label.name)
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Set label config
+        id: config
+        run: |
+          # Webhook calls trigger an n8n workflow that tracks warnings per user.
+          # Once a user accumulates enough warnings, the workflow blocks them automatically.
+          case "${{ github.event.label.name }}" in
+            "block")
+              echo "comment=@${{ env.AUTHOR }} Due to a violation of our contributing guidelines, you are now blocked. Please review n8n's [contributing](${{ env.CONTRIBUTING_LINK }}) guidelines." >> $GITHUB_OUTPUT
+              echo "should_close=true" >> $GITHUB_OUTPUT
+              curl -L \
+              -X PUT \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GH_ORG_BLOCK_USER_PAT }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/orgs/${{ env.ORG_NAME }}/blocks/${{ env.AUTHOR }}"
+              ;;
+            "quality:unusable")
+              curl -s -X POST \
+              -u "${{ secrets.WEBHOOK_USER }}:${{ secrets.WEBHOOK_PASSWORD }}" \
+              -H "Content-Type: application/json" \
+              -d "$(printf '{"user": %s, "label": "quality:unusable"}' "$(printf '%s' "${{ env.AUTHOR }}" | jq -Rs .)")" \
+              "${{ secrets.WEBHOOK_URL }}"
+              echo "comment=@${{ env.AUTHOR }} This contribution doesn't improve the doc, or meet our quality standards. Please review n8n's [contributing](${{ env.CONTRIBUTING_LINK }}) guidelines." >> $GITHUB_OUTPUT
+              echo "should_close=true" >> $GITHUB_OUTPUT
+              ;;
+            "quality:disruptive")
+              echo "comment=@${{ env.AUTHOR }} This contribution appears to be low-quality, AI-generated, or proposes changes that are disruptive or outside the scope of n8n's documentation. Please review n8n's [contributing](${{ env.CONTRIBUTING_LINK }}) guidelines." >> $GITHUB_OUTPUT
+              echo "should_close=true" >> $GITHUB_OUTPUT
+              curl -L \
+              -X PUT \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GH_ORG_BLOCK_USER_PAT }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/orgs/${{ env.ORG_NAME }}/blocks/${{ env.AUTHOR }}"
+              ;;
+            "quality:low-effort-usable")
+              curl -s -X POST \
+              -u "${{ secrets.WEBHOOK_USER }}:${{ secrets.WEBHOOK_PASSWORD }}" \
+              -H "Content-Type: application/json" \
+              -d "$(printf '{"user": %s, "label": "quality:low-effort-usable"}' "$(printf '%s' "${{ env.AUTHOR }}" | jq -Rs .)")" \
+              "${{ secrets.WEBHOOK_URL }}"
+              echo "comment=@${{ env.AUTHOR }} Thank you for contributing. This is a minor contribution, but good quality. Please review n8n's [contributing](${{ env.CONTRIBUTING_LINK }}) guidelines, and keep low-effort contributions to a minimum." >> $GITHUB_OUTPUT
+              echo "should_close=false" >> $GITHUB_OUTPUT
+              ;;
+            "status:duplicate")
+              echo "comment=@${{ env.AUTHOR }} This duplicates another issue or PR, or the work was already done elsewhere. Please review n8n's [contributing](${{ env.CONTRIBUTING_LINK }}) guidelines." >> $GITHUB_OUTPUT
+              echo "should_close=true" >> $GITHUB_OUTPUT
+              ;;
+            "scope:old-course")
+              curl -s -X POST \
+              -u "${{ secrets.WEBHOOK_USER }}:${{ secrets.WEBHOOK_PASSWORD }}" \
+              -H "Content-Type: application/json" \
+              -d "$(printf '{"user": %s, "label": "scope:old-course"}' "$(printf '%s' "${{ env.AUTHOR }}" | jq -Rs .)")" \
+              "${{ secrets.WEBHOOK_URL }}"
+              echo "comment=Hi @${{ env.AUTHOR }}! Thanks for your contribution, but we are no longer updating the course. We expect to fully replace it in the coming months. Please review n8n's [contributing](${{ env.CONTRIBUTING_LINK }}) guidelines." >> $GITHUB_OUTPUT
+              echo "should_close=true" >> $GITHUB_OUTPUT
+              ;;
+            "status:dev-cancelled")
+              echo "comment=Hi @${{ env.AUTHOR }}, thanks for the pull request! It looks like the PR in the main repo was closed. I'm going to go ahead and close this one too since this depends on the main repo submission being accepted. Please let me know if the status changes, however, and we can re-open as needed." >> $GITHUB_OUTPUT
+              echo "should_close=true" >> $GITHUB_OUTPUT
+              ;;
+            "status:pending-dev")
+              echo "comment=Thanks @${{ env.AUTHOR }}! We'll hold off on reviewing this until the PR is ready to go in the main repo." >> $GITHUB_OUTPUT
+              echo "should_close=false" >> $GITHUB_OUTPUT
+              ;;
+            "status:awaiting-release")
+              echo "comment=Holding off on merging until this is released." >> $GITHUB_OUTPUT
+              echo "should_close=false" >> $GITHUB_OUTPUT
+              ;;
+          esac
+      - name: Add comment
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          BODY: ${{ steps.config.outputs.comment }}
+      - name: Close issue or PR
+        if: steps.config.outputs.should_close == 'true'
+        run: |
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            gh issue close "$NUMBER"
+          else
+            gh pr close "$NUMBER"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}

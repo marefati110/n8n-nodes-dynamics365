@@ -1,0 +1,72 @@
+---
+title: Google Gemini node documentation
+description: >-
+  Learn how to use the Google Gemini node in n8n. Follow technical documentation
+  to integrate Google Gemini node into your workflows.
+contentType:
+  - integration
+  - reference
+nodeTitle: Google Gemini node documentation
+originalFilePath: integrations/builtin/app-nodes/n8n-nodes-langchain.googlegemini.md
+originalUrl: >-
+  https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.googlegemini
+url: >-
+  https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.googlegemini
+layout:
+  description:
+    visible: false
+---
+
+# Google Gemini node <a href="#google-gemini-node" id="google-gemini-node"></a>
+
+{% hint style="info" %}
+On n8n Cloud, you can use the Google Gemini node with [Gateway credits](https://app.gitbook.com/s/jm0ZYRpZIPWge2ZSiDYO/use-n8n-cloud/gateway-credits) instead of your own Google API key. Select **Use Gateway credits** in the node's credential field to run the node without a Google account.
+{% endhint %}
+
+Use the Google Gemini node to automate work in Google Gemini and integrate Google Gemini with other applications. n8n has built-in support for a wide range of Google Gemini features, including working with audio, videos, images, documents, and files to analyze, generate, and transcribe.
+
+On this page, you'll find a list of operations the Google Gemini node supports, and links to more resources.
+
+{% hint style="info" %}
+**Credentials**
+
+Refer to the [Google Gemini(PaLM) credentials documentation](../credentials/googleai.md) for authentication information for this node.
+{% endhint %}
+
+
+## Operations <a href="#operations" id="operations"></a>
+
+* Audio:
+	* Analyze Audio: Take in audio and answer questions about it.
+	* Transcribe a Recording: Transcribes audio into text.
+* Document:
+	* Analyze Document: Take in documents and answer questions about them.
+* File Search:
+	* Create File Search Store: Create a new File Search store for RAG (Retrieval Augmented Generation)
+	* Delete File Search Store: Delete File Search Store
+	* List File Search Stores: List all File Search stores owned by the user
+	* Upload to File Search Store: Upload a file to a File Search store for RAG (Retrieval Augmented Generation)
+* Image:
+	* Analyze Image: Take in images and answer questions about them.
+	* Generate an Image: Creates an image from a text prompt.
+	* Edit Image: Upload one or more images and apply edits based on a prompt
+* Media File:
+	* Upload Media File: Upload a file to the Google Gemini API for later user.
+* Text:
+	* Message a Model: Create a completion with a Google Gemini model.
+* Video:
+	* Analyze Video: Take in videos and answer questions about them.
+	* Generate a Video: Creates a video from a text prompt.
+	* Download Video: Download a generated video from the Google Gemini API using a URL.
+
+## Templates and examples <a href="#templates-and-examples" id="templates-and-examples"></a>
+
+
+[Browse Google Gemini node documentation integration templates](https://n8n.io/integrations/google-gemini) or [search all templates](https://n8n.io/workflows/)
+
+## Related resources <a href="#related-resources" id="related-resources"></a>
+
+
+Refer to [Google Gemini's documentation](https://ai.google.dev/gemini-api/docs) for more information about the service.
+
+{% include "https://app.gitbook.com/s/GixZThfitWP21x2gQFpD/~/reusable/96ifDzfcUuwOyYrubZUt/" %}

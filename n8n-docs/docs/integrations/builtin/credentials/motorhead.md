@@ -1,0 +1,60 @@
+---
+title: Motorhead credentials
+description: >-
+  Documentation for the Motorhead credentials. Use these credentials to
+  authenticate Motorhead in n8n, a workflow automation platform.
+contentType:
+  - integration
+  - reference
+priority: medium
+nodeTitle: Motorhead credentials
+originalFilePath: integrations/builtin/credentials/motorhead.md
+originalUrl: 'https://docs.n8n.io/integrations/builtin/credentials/motorhead'
+url: 'https://docs.n8n.io/integrations/builtin/credentials/motorhead'
+layout:
+  description:
+    visible: false
+---
+
+# Motorhead credentials <a href="#motorhead-credentials" id="motorhead-credentials"></a>
+
+{% hint style="warning" %}
+**Feature availability**
+
+The Motorhead project is no longer maintained. The [Motorhead node](../cluster-nodes/sub-nodes/n8n-nodes-langchain.memorymotorhead.md) is deprecated from n8n 2.8.0, and will be removed in a future version. See [Deprecated and versioned nodes](../deprecated-nodes.md) for details.
+{% endhint %}
+
+You can use these credentials to authenticate the following nodes:
+
+* [Motorhead](../cluster-nodes/sub-nodes/n8n-nodes-langchain.memorymotorhead.md)
+
+## Supported authentication methods <a href="#supported-authentication-methods" id="supported-authentication-methods"></a>
+
+- API key
+
+## Related resources <a href="#related-resources" id="related-resources"></a>
+
+Refer to [Motorhead's API documentation](https://docs.getmetal.io/rest-api/introduction) for more information about the service.
+
+{% include "https://app.gitbook.com/s/GixZThfitWP21x2gQFpD/~/reusable/mjXhKRIw98UJ5hk9LWBl/" %}
+
+## Using API key <a href="#using-api-key" id="using-api-key"></a>
+
+To configure this credential, you'll need a [Motorhead](https://www.metal.ai/) account and:
+
+- Your **Host** URL
+- An **API Key**
+- A **Client ID**
+
+To set it up, you'll generate an API key:
+
+1. If you're self-hosting Motorhead, update the **Host** URL to match your Motorhead URL.
+2. In Motorhead, go to **Settings > Organization**.
+3. In the **API Keys** section, select **Create**.
+4. Enter a **Name** for your API Key, like `n8n integration`.
+5. Select **Generate**.
+6. Copy the **apiKey** and enter it in your n8n credential.
+7. Return to the API key list.
+8. Copy the **clientID** for the key and enter it as the **Client ID** in your n8n credential.
+
+Refer to [Generate an API key](https://docs.getmetal.io/guides/misc-get-keys) for more information.

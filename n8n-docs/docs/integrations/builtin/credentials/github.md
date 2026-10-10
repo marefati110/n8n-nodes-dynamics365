@@ -1,0 +1,102 @@
+---
+title: GitHub credentials
+description: >-
+  Documentation for GitHub credentials. Use these credentials to authenticate
+  GitHub in n8n, a workflow automation platform.
+contentType:
+  - integration
+  - reference
+priority: medium
+nodeTitle: GitHub credentials
+originalFilePath: integrations/builtin/credentials/github.md
+originalUrl: 'https://docs.n8n.io/integrations/builtin/credentials/github'
+url: 'https://docs.n8n.io/integrations/builtin/credentials/github'
+layout:
+  description:
+    visible: false
+---
+
+# GitHub credentials <a href="#github-credentials" id="github-credentials"></a>
+
+You can use these credentials to authenticate the following nodes:
+
+- [GitHub](../app-nodes/n8n-nodes-base.github.md)
+- [GitHub Trigger](../trigger-nodes/n8n-nodes-base.githubtrigger.md)
+- [GitHub Document Loader](../cluster-nodes/sub-nodes/n8n-nodes-langchain.documentgithubloader.md): this node doesn't support OAuth.
+
+## Prerequisites <a href="#prerequisites" id="prerequisites"></a>
+
+Create a [GitHub](https://github.com/) account.
+
+## Supported authentication methods <a href="#supported-authentication-methods" id="supported-authentication-methods"></a>
+
+- API access token: Use this method with any GitHub nodes.
+- OAuth2: Use this method with [GitHub](../app-nodes/n8n-nodes-base.github.md) and [GitHub Trigger](../trigger-nodes/n8n-nodes-base.githubtrigger.md) nodes only; don't use with [GitHub Document Loader](../cluster-nodes/sub-nodes/n8n-nodes-langchain.documentgithubloader.md).
+
+## Related resources <a href="#related-resources" id="related-resources"></a>
+
+Refer to [GitHub's API documentation](https://docs.github.com/en/rest) for more information about the service.
+
+## Using API access token <a href="#using-api-access-token" id="using-api-access-token"></a>
+
+To configure this credential, you'll need a [GitHub](https://github.com/) account.
+
+There are two steps to setting up this credential:
+
+1. [Generate a GitHub personal access token](#generate-personal-access-token).
+2. [Set up the credential](#set-up-the-credential).
+
+Refer to the sections below for detailed instructions.
+
+### Generate personal access token <a href="#generate-personal-access-token" id="generate-personal-access-token"></a>
+
+{% hint style="info" %}
+**Recommended access token type**
+
+n8n recommends using a personal access token (classic). GitHub's fine-grained personal access tokens let you limit access to specific repositories and permissions, but they have some [limitations](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#fine-grained-personal-access-tokens-limitations).
+{% endhint %}
+
+To generate your personal access token:
+
+1. If you haven't done so already, verify your email address with GitHub. Refer to [Verifying your email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/verifying-your-email-address) for more information.
+2. Open your GitHub profile [Settings](https://github.com/settings/profile).
+3. In the left navigation, select [**Developer settings**](https://github.com/settings/apps).
+4. In the left navigation, under **Personal access tokens**, select **Tokens (classic)**.
+5. Select **Generate new token > Generate new token (classic)**.
+6. Enter a descriptive name for your token in the **Note** field, like `n8n integration`.
+7. Select the **Expiration** you'd like for the token, or select **No expiration**.
+8. Select **Scopes** for your token. For most of the n8n GitHub nodes, add the `repo` scope.
+    - A token without assigned scopes can only access public information.
+9. Select **Generate token**.
+10. Copy the token.
+
+Refer to [Creating a personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) for more information. Refer to [Scopes for OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes) for more information on GitHub scopes.
+
+### Set up the credential <a href="#set-up-the-credential" id="set-up-the-credential"></a>
+
+Then, in your n8n credential:
+
+1. If you aren't using GitHub Enterprise Server, don't change the **GitHub server** URL.
+    - If you're using [GitHub Enterprise Server](https://docs.github.com/en/enterprise-server@3.9/admin/overview/about-github-enterprise-server), update **GitHub server** to match the URL for your server.
+2. Enter your **User** name as it appears in your GitHub profile.
+3. Enter the **Access Token** you generated above.
+
+## Using OAuth2 <a href="#using-oauth2" id="using-oauth2"></a>
+
+{% include "https://app.gitbook.com/s/GixZThfitWP21x2gQFpD/~/reusable/HoGXnGIfupVt81dGox48/" %}
+
+If you're [self-hosting n8n](https://app.gitbook.com/s/jm0ZYRpZIPWge2ZSiDYO/host-n8n), create a new GitHub [OAuth app](https://docs.github.com/en/apps/oauth-apps):
+
+1. Open your GitHub profile [Settings](https://github.com/settings/profile).
+2. In the left navigation, select [**Developer settings**](https://github.com/settings/apps).
+3. In the left navigation, select **OAuth apps**.
+4. Select **New OAuth App**.
+    - If you haven't created an app before, you may see **Register a new application** instead. Select it.
+5. Enter an **Application name**, like `n8n integration`.
+6. Enter the **Homepage URL** for your app's website.
+7. If you'd like, add the optional **Application description**, which GitHub displays to end-users.
+8. From n8n, copy the **OAuth Redirect URL** and paste it into the GitHub **Authorization callback URL**.
+9. Select **Register application**.
+10. Copy the **Client ID** and **Client Secret** this generates and add them to your n8n credential.
+
+Refer to the [GitHub Authorizing OAuth apps documentation](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/authorizing-oauth-apps) for more information on the authorization process.
