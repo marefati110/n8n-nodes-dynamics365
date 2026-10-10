@@ -1,11 +1,11 @@
 import type {
+	NodeConnectionType,
 	IDataObject,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
 	IPollFunctions,
 } from 'n8n-workflow';
-import { NodeConnectionTypes } from 'n8n-workflow';
 import { dynamicsApiRequestAllItems } from '../Dynamics365/transport';
 import { resolveEntity, toWebApiPropertyNames } from '../Dynamics365/helpers/metadata';
 import { buildCommonHeaders } from '../Dynamics365/helpers/odata';
@@ -34,7 +34,7 @@ export class Dynamics365Trigger implements INodeType {
 		defaults: { name: 'Dynamics 365 Trigger' },
 		polling: true,
 		inputs: [],
-		outputs: [NodeConnectionTypes.Main],
+		outputs: ['main' as NodeConnectionType],
 		credentials: [{ name: 'dynamics365NtlmApi', required: true, testedBy: 'dynamics365NtlmApiTest' }],
 		properties: [
 			{

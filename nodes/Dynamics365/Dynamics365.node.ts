@@ -1,11 +1,12 @@
 import type {
+	NodeConnectionType,
 	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { NodeOperationError } from 'n8n-workflow';
 import { recordFields, recordOperations as recordOperationProperties } from './descriptions/RecordDescription';
 import { operationFields, operationOperations } from './descriptions/OperationDescription';
 import { metadataFields, metadataOperations as metadataOperationProperties } from './descriptions/MetadataDescription';
@@ -39,8 +40,9 @@ export class Dynamics365 implements INodeType {
 		description: 'Work with Microsoft Dynamics 365 / Dataverse on-premises through the Web API using NTLM authentication',
 		defaults: { name: 'Dynamics 365' },
 		usableAsTool: true,
-		inputs: [NodeConnectionTypes.Main],
-		outputs: [NodeConnectionTypes.Main],
+		// A string literal instead of NodeConnectionTypes keeps the node loadable on n8n < 1.83.
+		inputs: ['main' as NodeConnectionType],
+		outputs: ['main' as NodeConnectionType],
 		credentials: [{ name: 'dynamics365NtlmApi', required: true, testedBy: 'dynamics365NtlmApiTest' }],
 		properties: [
 			{
